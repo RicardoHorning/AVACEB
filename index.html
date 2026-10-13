@@ -1,15 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="h-full bg-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal do Aluno — Avaliação de Excel Aplicado à Logística</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Boletim de Desempenho e Feedback - Excel Aplicado à Logística</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <script>
     tailwind.config = {
       theme: {
@@ -19,11 +25,12 @@
           },
           colors: {
             brand: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
+              50: '#f0f7ff',
+              100: '#e0effe',
               500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
+              600: '#0265d2',
+              700: '#0369a1',
+              800: '#075985',
               900: '#0c4a6e',
             }
           }
@@ -31,719 +38,912 @@
       }
     }
   </script>
+
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
-    .custom-scrollbar::-webkit-scrollbar-track {
+    ::-webkit-scrollbar-track {
       background: #f1f5f9;
-      border-radius: 4px;
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 4px;
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+
+    /* Smartphone Frame Simulator Styles */
+    .mobile-simulator {
+      max-width: 412px !important;
+      margin: 1.5rem auto !important;
+      border: 10px solid #1e293b;
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      background-color: #f8fafc;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-simulator::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 18px;
+      background-color: #1e293b;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      z-index: 50;
+    }
+
+    /* Desktop Forced Mode */
+    .desktop-simulator {
+      max-width: 1280px !important;
+      width: 100% !important;
+      margin: 1.5rem auto !important;
+      transition: all 0.3s ease;
+    }
+
+    /* Print styling rules */
     @media print {
-      .no-print { display: none !important; }
-      body { background: white !important; color: black !important; padding: 0 !important; }
-      .print-shadow-none { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-      .page-break { page-break-before: always; }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .mobile-simulator {
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+<body class="min-h-full font-sans text-slate-800 antialiased bg-slate-100 flex flex-col">
 
-  <!-- HEADER & NAVIGATION BAR -->
-  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="p-2 bg-brand-500/20 text-brand-400 rounded-lg border border-brand-500/30">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
+  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md border-b border-slate-800 no-print">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3 text-center md:text-left">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-sky-500/30">
+          <i class="fa-solid fa-file-invoice text-lg"></i>
         </div>
         <div>
-          <h1 class="font-bold text-base sm:text-lg text-white leading-tight">LogiSul Capacitação</h1>
-          <p class="text-xs text-slate-400">Excel Aplicado à Gestão Logística</p>
+          <h1 class="font-bold text-base sm:text-lg leading-tight text-white">Boletim & Feedback de Desempenho</h1>
+          <p class="text-xs text-sky-300">Avaliação Prática de Excel Aplicado à Logística • Turma A</p>
         </div>
       </div>
 
-      <!-- Quick Metrics Badges -->
-      <div class="hidden md:flex items-center space-x-3">
-        <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 text-xs">
-          <span class="text-slate-400">Média da Turma:</span>
-          <span class="font-bold text-sky-400 text-sm">9,1 / 10,0</span>
-        </div>
-        <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 text-xs">
-          <span class="text-slate-400">Média Mínima:</span>
-          <span class="font-bold text-emerald-400 text-sm">6,0 / 10,0</span>
-        </div>
-        <div class="bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400">
-          100% Aprovados
-        </div>
+      <!-- Device Viewport Switcher -->
+      <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-medium">
+        <span class="text-slate-400 px-2 font-semibold hidden lg:inline"><i class="fa-solid fa-sliders mr-1"></i> Visualização:</span>
+        
+        <button id="btn-mode-auto" onclick="setDeviceMode('auto')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all bg-sky-600 text-white font-semibold shadow-sm">
+          <i class="fa-solid fa-bolt text-amber-300"></i>
+          <span>Automático</span>
+        </button>
+
+        <button id="btn-mode-mobile" onclick="setDeviceMode('mobile')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-700">
+          <i class="fa-solid fa-mobile-screen"></i>
+          <span>📱 Celular</span>
+        </button>
+
+        <button id="btn-mode-desktop" onclick="setDeviceMode('desktop')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-700">
+          <i class="fa-solid fa-desktop"></i>
+          <span>💻 PC</span>
+        </button>
       </div>
+
     </div>
   </header>
 
-  <!-- MAIN CONTAINER -->
-  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <main id="app-wrapper" class="flex-grow w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 transition-all duration-300">
 
-    <!-- MANDATORY COMPOSITIVE GRADE BANNER -->
-    <div class="bg-gradient-to-r from-blue-900 via-brand-900 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-lg border border-brand-500/30 relative overflow-hidden">
-      <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="flex items-start space-x-3.5 relative z-10">
-        <div class="p-2.5 bg-brand-500/20 text-brand-300 rounded-xl border border-brand-400/30 shrink-0 mt-0.5">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-        <div class="space-y-1">
-          <div class="flex items-center space-x-2">
-            <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-brand-500 text-white rounded-md">Aviso Importante do Módulo</span>
-            <span class="text-xs text-sky-200 hidden sm:inline">• Composição da Nota Final</span>
-          </div>
-          <p class="text-sm sm:text-base text-slate-100 font-medium leading-relaxed">
-            A nota apresentada nesta avaliação compõe o módulo juntamente com as demais atividades contínuas e avaliações práticas realizadas pelo professor em sala de aula.
-          </p>
-          <p class="text-xs text-slate-300 pt-1">
-            Nota de corte para aprovação no módulo: <strong class="text-emerald-300">6,0 pontos</strong>. Todas as notas desta prova foram acima de <strong class="text-sky-300">7,9</strong>.
-          </p>
-        </div>
+    <!-- BANNER AZUL DESTACADO DA NOTA DO MÓDULO -->
+    <section class="mb-5 bg-gradient-to-r from-blue-700 via-indigo-700 to-sky-700 text-white rounded-2xl p-4 sm:p-5 shadow-lg relative overflow-hidden">
+      <!-- Decorative background graphics -->
+      <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+        <i class="fa-solid fa-graduation-cap text-9xl"></i>
       </div>
-    </div>
-
-    <!-- NAVIGATION TABS & VIEW TOGGLE -->
-    <div class="no-print flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white p-2 rounded-xl shadow-sm border border-slate-200">
-      <div class="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg">
-        <button id="tabIndividual" onclick="switchView('individual')" class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 bg-white text-slate-900 shadow-sm">
-          <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          <span>Consulta Individual do Aluno</span>
-        </button>
-        <button id="tabTurma" onclick="switchView('turma')" class="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 text-slate-600 hover:text-slate-900">
-          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          <span>Boletim Geral da Turma (12)</span>
-        </button>
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <button onclick="window.print()" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors border border-slate-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-          </svg>
-          <span>Imprimir / Exportar PDF</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- VIEW 1: INDIVIDUAL STUDENT CONSULTATION -->
-    <div id="viewIndividual" class="space-y-6">
       
-      <!-- Student Selector Box -->
-      <div class="no-print bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-        <label for="studentSelect" class="block text-xs font-bold uppercase tracking-wider text-slate-500">
-          Selecione o Aluno(a) para Visualizar o Desempenho e Feedback:
+      <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        
+        <!-- Main Approval & Grade Rules Notice -->
+        <div class="flex items-start space-x-3 sm:space-x-4">
+          <div class="p-3 bg-white/10 backdrop-blur-md rounded-2xl shrink-0 text-amber-300">
+            <i class="fa-solid fa-award text-2xl sm:text-3xl"></i>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 text-xs font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i> 100% DE APROVAÇÃO
+              </span>
+              <span class="bg-white/15 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                Nota Mínima do Módulo: 6,0
+              </span>
+            </div>
+            <h2 class="text-base sm:text-lg font-bold text-white leading-snug">
+              Parabéns a toda a turma! Todos os alunos obtiveram resultado superior à média mínima exigida.
+            </h2>
+            <p class="text-xs sm:text-sm text-sky-100 mt-1">
+              A menor nota registrada na turma foi <strong>7,9</strong>, consolidando um índice excepcional de retenção do aprendizado prático.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Esclarecimento Pedagógico Nota do Módulo -->
+      <div class="mt-4 pt-3 border-t border-white/15 flex items-start space-x-2 text-xs sm:text-sm text-sky-100 bg-black/15 p-3 rounded-xl">
+        <i class="fa-solid fa-circle-info text-sky-300 text-base mt-0.5 shrink-0"></i>
+        <p>
+          <strong class="text-white font-semibold">Atenção Aluno:</strong> A nota desta avaliação teórica/prática compõe a nota final do módulo juntamente com as demais atividades contínuas, frequência e participações em sala de aula conduzidas pelo professor.
+        </p>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Média da Turma</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-blue-700 mt-0.5">9,1 <span class="text-xs font-normal text-slate-400">/ 10,0</span></p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-chart-line text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Taxa de Aprovação</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-0.5">100%</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-user-check text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Maior Nota</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-0.5">10,0 <span class="text-xs font-normal text-slate-400">(2 alunos)</span></p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-crown text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total de Alunos</p>
+          <p class="text-xl sm:text-2xl font-extrabold text-indigo-600 mt-0.5">12 Alunos</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+          <i class="fa-solid fa-users text-lg"></i>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2 no-print">
+      <div class="flex space-x-2">
+        <button id="tab-btn-individual" onclick="switchMainTab('individual')" class="px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-blue-600 text-white shadow-sm">
+          <i class="fa-solid fa-id-card"></i>
+          <span>Consulta por Aluno</span>
+        </button>
+        <button id="tab-btn-general" onclick="switchMainTab('general')" class="px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200">
+          <i class="fa-solid fa-table-list"></i>
+          <span>Boletim Geral da Turma</span>
+        </button>
+      </div>
+
+      <button onclick="window.print()" class="hidden sm:flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition-all">
+        <i class="fa-solid fa-print"></i>
+        <span>Imprimir / Exportar PDF</span>
+      </button>
+    </div>
+
+    <!-- SECTION 1: CONSULTA INDIVIDUAL POR ALUNO -->
+    <section id="section-individual" class="space-y-5">
+      
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
+        <label for="student-select" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+          <i class="fa-solid fa-magnifying-glass text-blue-600 mr-1"></i> Selecione ou busque o aluno para consultar o feedback:
         </label>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <!-- Dropdown Select -->
-          <div class="md:col-span-2 relative">
-            <select id="studentSelect" onchange="onStudentSelect(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 font-medium text-sm sm:text-base focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all appearance-none cursor-pointer">
-              <!-- Options populated via JS -->
+        <div class="flex flex-col sm:flex-row items-center gap-2">
+          <!-- Dropdown Selector -->
+          <div class="relative w-full">
+            <select id="student-select" onchange="onStudentSelectChange(this.value)" class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-300 rounded-xl font-semibold text-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer">
+              <!-- Populated by JavaScript -->
             </select>
-            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
             </div>
           </div>
 
-          <!-- Quick Search Filter -->
-          <div class="relative">
-            <input type="text" id="searchInput" oninput="filterStudentDropdown(this.value)" placeholder="Digite para filtrar o nome..." class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-              </svg>
-            </div>
+          <!-- Quick Navigation Buttons -->
+          <div class="flex items-center space-x-1 w-full sm:w-auto shrink-0">
+            <button onclick="navigateStudent(-1)" class="flex-1 sm:flex-none px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-all flex items-center justify-center space-x-1 border border-slate-200">
+              <i class="fa-solid fa-chevron-left"></i>
+              <span class="hidden sm:inline">Anterior</span>
+            </button>
+            <button onclick="navigateStudent(1)" class="flex-1 sm:flex-none px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-xs transition-all flex items-center justify-center space-x-1 border border-slate-200">
+              <span class="hidden sm:inline">Próximo</span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
           </div>
-        </div>
-
-        <!-- Shortcut Chips for Quick Navigation -->
-        <div class="pt-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-          <span class="font-semibold text-slate-600 mr-1">Atalhos rápidos:</span>
-          <button onclick="selectStudentById('8')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors font-medium">⭐ Jennifer (10,0)</button>
-          <button onclick="selectStudentById('12')" class="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors font-medium">⭐ Rebeca (10,0)</button>
-          <button onclick="selectStudentById('6')" class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition-colors font-medium">Giovanna (9,8)</button>
-          <button onclick="selectStudentById('11')" class="px-2.5 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition-colors font-medium">Lucas (9,8)</button>
-          <button onclick="selectStudentById('1')" class="px-2.5 py-1 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors font-medium">Adriana (7,9)</button>
         </div>
       </div>
 
-      <!-- STUDENT DYNAMIC CARD CONTAINER -->
-      <div id="studentCardContainer" class="space-y-6">
+      <div id="student-card-container">
         <!-- Rendered dynamically by JS -->
       </div>
 
-    </div>
+    </section>
 
-    <!-- VIEW 2: CLASS BULLETIN TABLE -->
-    <div id="viewTurma" class="hidden space-y-6">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        
-        <!-- Table Header & Search -->
-        <div class="p-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50">
-          <div>
-            <h2 class="text-lg font-bold text-slate-900">Boletim Geral Consolidado da Turma</h2>
-            <p class="text-xs text-slate-500">Exibição de todas as notas parciais e nota final dos 12 alunos em ordem alfabética.</p>
-          </div>
-
-          <div class="flex items-center space-x-3">
-            <div class="relative w-full md:w-64">
-              <input type="text" id="tableSearchInput" oninput="filterClassTable(this.value)" placeholder="Buscar aluno na tabela..." class="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none">
-              <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </div>
+    <!-- SECTION 2: BOLETIM GERAL DA TURMA (GRELHA DE NOTAS) -->
+    <section id="section-general" class="hidden space-y-4">
+      
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3 no-print">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+          
+          <!-- Search input -->
+          <div class="relative w-full md:w-72">
+            <input type="text" id="table-search" oninput="renderGeneralTable()" placeholder="Buscar aluno por nome..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
             </div>
           </div>
-        </div>
 
-        <!-- Table Data -->
-        <div class="overflow-x-auto custom-scrollbar">
+          <!-- Quick Grade Filters -->
+          <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto text-xs">
+            <span class="text-slate-400 font-medium mr-1 hidden sm:inline"><i class="fa-solid fa-filter"></i> Filtrar:</span>
+            <button onclick="setTableFilter('all')" id="filter-btn-all" class="px-3 py-1.5 rounded-lg font-semibold bg-blue-600 text-white shadow-sm">Todos (12)</button>
+            <button onclick="setTableFilter('top')" id="filter-btn-top" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Nota 10,0</button>
+            <button onclick="setTableFilter('above9')" id="filter-btn-above9" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Notas ≥ 9,0</button>
+            <button onclick="setTableFilter('above8')" id="filter-btn-above8" class="px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200">Notas ≥ 8,0</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-slate-900 text-white text-xs font-semibold uppercase tracking-wider">
-                <th class="py-3.5 px-4 text-center w-12">#</th>
-                <th class="py-3.5 px-4 min-w-[200px]">Aluno(a)</th>
-                <th class="py-3.5 px-3 text-center min-w-[70px]">Q1 <span class="block text-[10px] text-slate-400 font-normal">(2.0)</span></th>
-                <th class="py-3.5 px-3 text-center min-w-[70px]">Q2 <span class="block text-[10px] text-slate-400 font-normal">(2.0)</span></th>
-                <th class="py-3.5 px-3 text-center min-w-[70px]">Q3 <span class="block text-[10px] text-slate-400 font-normal">(2.0)</span></th>
-                <th class="py-3.5 px-3 text-center min-w-[70px]">Q4 <span class="block text-[10px] text-slate-400 font-normal">(2.0)</span></th>
-                <th class="py-3.5 px-3 text-center min-w-[70px]">Q5 <span class="block text-[10px] text-slate-400 font-normal">(2.0)</span></th>
-                <th class="py-3.5 px-4 text-center min-w-[100px] bg-slate-800 text-sky-300">Nota Final</th>
-                <th class="py-3.5 px-4 text-center min-w-[140px]">Status Módulo</th>
-                <th class="py-3.5 px-3 text-center no-print">Ação</th>
+              <tr class="bg-slate-900 text-white text-xs uppercase font-bold tracking-wider">
+                <th class="py-3.5 px-4 text-center">#</th>
+                <th class="py-3.5 px-4">Nome do Aluno</th>
+                <th class="py-3.5 px-3 text-center">Q1</th>
+                <th class="py-3.5 px-3 text-center">Q2</th>
+                <th class="py-3.5 px-3 text-center">Q3</th>
+                <th class="py-3.5 px-3 text-center">Q4</th>
+                <th class="py-3.5 px-3 text-center">Q5</th>
+                <th class="py-3.5 px-4 text-center">Nota Final</th>
+                <th class="py-3.5 px-4 text-center">Situação</th>
+                <th class="py-3.5 px-4 text-center no-print">Ação</th>
               </tr>
             </thead>
-            <tbody id="classTableBody" class="divide-y divide-slate-200 text-sm">
-              <!-- Rows populated by JS -->
+            <tbody id="general-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+              <!-- Populated by JavaScript -->
             </tbody>
           </table>
         </div>
-
-        <!-- Table Summary Footer -->
-        <div class="p-4 bg-slate-50 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-xs">
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-            <span class="text-slate-500 block">Média Geral da Turma</span>
-            <span class="text-base font-bold text-brand-600">9,1 / 10,0</span>
-          </div>
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-            <span class="text-slate-500 block">Média Mínima para Aprovação</span>
-            <span class="text-base font-bold text-slate-800">6,0 / 10,0</span>
-          </div>
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-            <span class="text-slate-500 block">Maior Nota Alcançada</span>
-            <span class="text-base font-bold text-emerald-600">10,0 (2 Alunas)</span>
-          </div>
-          <div class="p-2.5 bg-white rounded-lg border border-slate-200">
-            <span class="text-slate-500 block">Taxa de Aprovados (≥ 6,0)</span>
-            <span class="text-base font-bold text-emerald-600">100% (12 Alunos)</span>
-          </div>
-        </div>
-
       </div>
-    </div>
+
+    </section>
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="no-print bg-slate-900 text-slate-400 text-xs border-t border-slate-800 py-6 mt-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div>
-        <p class="font-medium text-slate-300">LogiSul Capacitação Técnica em Excel Aplicado à Logística</p>
-        <p class="text-slate-500 mt-0.5">Relatório Pedagógico e Avaliação Individual do Módulo • Setembro / 2026</p>
-      </div>
-      <div class="flex items-center space-x-4">
-        <span class="px-2.5 py-1 bg-slate-800 rounded border border-slate-700 text-slate-300">Aprovação: ≥ 6,0</span>
-        <span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded font-semibold">Status: 100% Aprovados</span>
-      </div>
+  <footer class="mt-auto py-6 bg-slate-900 text-slate-400 text-xs text-center border-t border-slate-800 no-print">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <p class="font-semibold text-slate-300">Curso de Excel Aplicado à Logística • Módulo Prático de Avaliação</p>
+      <p>Desenvolvido para acompanhamento contínuo e feedback pedagógico individualizado.</p>
     </div>
   </footer>
 
-  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    const STUDENTS = [
+    // Complete Dataset for all 12 students in alphabetical order
+    const studentsData = [
       {
-        id: "1",
+        id: "adrianasouza",
         name: "Adriana de Sousa Lacerda",
+        initials: "AL",
         q1: 1.0,
         q2: 1.4,
         q3: 1.5,
         q4: 2.0,
         q5: 2.0,
         total: 7.9,
-        strengths: "Demonstrou excelente capacidade de análise prática dos motivos de atraso na expedição (Q4) e uma postura reflexiva impecável sobre o papel crítico do profissional na tomada de decisão (Q5).",
-        attention: "Atenção necessária nos cálculos de adição e subtrações na tabela de saldos da movimentação de estoque (Q1 - Caixas Plásticas e Filme Stretch). Lembre-se também de preencher todas as células de total e responder 100% dos itens dissertativos (Q2d e Q3d).",
-        recommendation: "Realizar dupla checagem visual e validação de fórmulas nas tabelas do Excel antes do envio dos relatórios operacionais."
+        strengths: "Excelente raciocínio analítico e capacidade crítica nas questões finais (Q4 e Q5), onde demonstrou amplo domínio teórico e visão completa de gestão de ociosidade e inteligência operacional.",
+        attention: "Cálculos de saldo de estoque (Q1) e conferência rigorosa de totais acumulados e preenchimento de itens discursivos nas questões Q2 e Q3.",
+        recommendation: "Praticar exercícios focados no fluxo diário de entradas e saídas de estoque no Excel, reforçando o uso de operadores de soma e subtração antes da entrega final."
       },
       {
-        id: "2",
+        id: "camilamartinez",
         name: "Camila Martinez",
+        initials: "CM",
         q1: 1.8,
         q2: 1.8,
         q3: 2.0,
         q4: 1.6,
         q5: 2.0,
         total: 9.2,
-        strengths: "Sólida interpretação técnica sobre o impacto do estoque parado no fluxo financeiro e domínio absoluto na identificação e cálculo de Lead Time na cadeia operacional (Q3).",
-        attention: "Atentar para registrar o preenchimento da célula de TOTAL da Quantidade (Q2). Na Q4, focar nos custos logísticos do excesso de insumo em vez de enfatizar a utilidade funcional do item.",
-        recommendation: "Manter a consistência na conferência dos totais das planilhas e refinar o vocabulário de custos e carregamento de estoque."
+        strengths: "Excelente visão de cubagem e balanceamento de expedição (Q3) e interpretação impecável do papel do profissional analista na logística em Q5.",
+        attention: "Preenchimento das células de totais finais das tabelas em Q1 e Q2 (evitar deixar linhas ou células de consolidação geral em branco).",
+        recommendation: "Criar o hábito de checklist de fechamento de relatório, garantindo que todas as células de soma totalizadora estejam devidamente formatadas e preenchidas."
       },
       {
-        id: "3",
+        id: "emanoelfcruz",
         name: "Emanoel F. da Cruz",
+        initials: "EC",
         q1: 1.4,
         q2: 1.6,
         q3: 1.8,
         q4: 2.0,
         q5: 2.0,
         total: 8.8,
-        strengths: "Excelente raciocínio lógico na proposição de melhorias práticas na rotina e ótima fundamentação na análise reflexiva sobre a autonomia humana frente ao software.",
-        attention: "Fazer uma conferência minuciosa nos cálculos dos saldos intermediários da tabela de movimentação física (Q1) para evitar pequenas distorções de soma.",
-        recommendation: "Utilizar linhas de totais com verificadores de soma no Excel (=SOMA ou fórmulas de saldo acumulado) para garantir zero desvio."
+        strengths: "Ótima capacidade de análise crítica nas estratégias de distribuição, otimização de insumos (Q4) e diagnósticos de inteligência logística (Q5).",
+        attention: "Operações matemáticas básicas no Excel (cuidados com inversão do sinal de subtração por adição no saldo de estoque e cálculo numérico do Filme Stretch).",
+        recommendation: "Revisar com atenção as fórmulas aplicadas antes de arrastá-las (`*`, `/`, `-`, `+`) e sempre testar o resultado numérico final com amostragem."
       },
       {
-        id: "4",
+        id: "fernandagabrielle",
         name: "Fernanda Gabrielle do Amaral",
+        initials: "FA",
         q1: 1.8,
         q2: 1.8,
         q3: 1.7,
         q4: 1.7,
         q5: 1.2,
         total: 8.2,
-        strengths: "Ótima precisão e organização no preenchimento das tabelas de valores e movimentação de estoque física (Q1 e Q2).",
-        attention: "Desenvolver com mais profundidade as respostas discursivas, em especial na Q5 (conceituando a diferença entre a execução do software e a inteligência estratégica do profissional).",
-        recommendation: "Exercitar a escrita técnica nas questões abertas, trazendo conceitos teóricos vistos em aula para fundamentar os argumentos."
+        strengths: "Acurácia elevada no preenchimento numérico das planilhas práticas, demonstrando rapidez na estruturação das tabelas de recebimento e movimentação.",
+        attention: "Aprofundamento nas respostas discursivas da Q5 (focar mais na tomada de decisão estratégica do profissional de logística além da simples alimentação de planilhas).",
+        recommendation: "Trabalhar a argumentação técnica conectando os números da planilha às tomadas de decisão que evitam custos extras e atrasos de entrega."
       },
       {
-        id: "5",
+        id: "francinedsouza",
         name: "Francine D. de Souza",
+        initials: "FS",
         q1: 1.6,
         q2: 2.0,
         q3: 2.0,
         q4: 2.0,
         q5: 2.0,
         total: 9.6,
-        strengths: "Avaliação de nível altíssimo. Respostas discursivas ricas, completas e com excelente maturidade conceitual sobre governança e eficiência logística.",
-        attention: "Apenas um pequeno detalhe na linha de saldos da Q1; mantenha o hábito de revisão dos cálculos numéricos.",
-        recommendation: "Excelente desempenho! Continue aprofundando os estudos em indicadores de desempenho avançados (KPIs de estoque)."
+        strengths: "Desempenho espetacular de Q2 a Q5! Domínio completo em conferência de totais, métricas de cubagem, ociosidade e argumentação conceitual perfeita.",
+        attention: "Atenção ao detalhe no fechamento da Q1: Lembrar de preencher sempre a linha de TOTAL final das tabelas de recebimento/expedição.",
+        recommendation: "Avançar para o estudo de fórmulas de busca avançada (PROCV, XLOOKUP e ÍNDICE/CORRESP) para otimizar ainda mais seu ritmo de trabalho."
       },
       {
-        id: "6",
+        id: "giovannaburence",
         name: "Giovanna Burence Borges Silva",
+        initials: "GS",
         q1: 2.0,
         q2: 1.8,
         q3: 2.0,
         q4: 2.0,
         q5: 2.0,
         total: 9.8,
-        strengths: "Excepcional sacada conceitual ao destacar que 'tempo de espera não agrega valor ao produto' (Q3) e excelente proposta prática para janelas de expedição (Q4).",
-        attention: "Atentar apenas para registrar por extenso ou numericamente o valor total acumulado no campo final da tabela da Q2.",
-        recommendation: "Manter esse alto nível de visão holística da cadeia de suprimentos e atenção ao detalhamento das planilhas."
+        strengths: "Quase perfeita! Domínio exemplar sobre indicadores chave de desempenho, cubagem, otimização de ociosidade e gestão logística.",
+        attention: "Pequeno detalhe técnico na Q2: Atenção ao preenchimento textual explicativo do valor acumulado total da tabela financeira.",
+        recommendation: "Manter a busca pela excelência contínua e atuar como liderança técnica em projetos em grupo do próximo módulo."
       },
       {
-        id: "7",
+        id: "giselesouza",
         name: "Gisele Souza de Almeida",
+        initials: "GA",
         q1: 2.0,
         q2: 1.4,
         q3: 1.8,
         q4: 2.0,
         q5: 2.0,
         total: 9.2,
-        strengths: "Ótimo plano prático de reajuste do lote de compras para adequação de estoque (Q4) e visão impecável sobre o papel insubstituível do analista (Q5).",
-        attention: "Garantir o preenchimento de questões dissertativas de apoio (Q2d) e registrar os totais na célula apropriada dentro do corpo da tabela.",
-        recommendation: "Realizar uma checagem final no gabarito para certificar que nenhum campo ou subitem ficou sem resposta."
+        strengths: "Gabaritou com nota máxima a Q1, Q4 e Q5! Domínio brilhante na conferência de saldos, otimização de insumos e inteligência logística.",
+        attention: "Garantir a resposta a todas as perguntas discursivas dos itens (Atenção para não deixar o item 'd' da Q2 em branco sem justificativa).",
+        recommendation: "Realizar uma checagem final página a página para certificar-se de que nenhum item ou sub-item discursivo foi esquecido."
       },
       {
-        id: "8",
+        id: "jenniferramirez",
         name: "Jennifer Ramirez Hdez",
+        initials: "JR",
         q1: 2.0,
         q2: 2.0,
         q3: 2.0,
         q4: 2.0,
         q5: 2.0,
         total: 10.0,
-        strengths: "Avaliação irretocável (Nota 10,0)! Precisão matemática absoluta aliada a uma capacidade exemplar de síntese técnica e tomada de decisão logística.",
-        attention: "Nenhuma falha técnica identificada nesta avaliação.",
-        recommendation: "Manter esta postura de excelência e liderança técnica, atuando como referência nas dinâmicas práticas de grupos."
+        strengths: "Desempenho PERFEITO! Prova irretocável com 100% de aproveitamento em todas as 5 questões, unindo matemática precisa e diagnósticos de alto nível.",
+        attention: "Padrão de excelência mantido com primor! Continuar praticando a validação cuidadosa de dados.",
+        recommendation: "Iniciar estudos em construção de Dashboards Executivos de Logística, Tabela Dinâmica e Automações com Macros/VBA."
       },
       {
-        id: "9",
+        id: "jhormanjavier",
         name: "Jhorman Javier Pinto Randon",
+        initials: "JR",
         q1: 1.5,
         q2: 2.0,
         q3: 2.0,
         q4: 1.2,
         q5: 2.0,
         total: 8.7,
-        strengths: "Ótimo raciocínio sobre a otimização dos tempos mortos para elevação da produtividade e boa clareza sobre o Excel como ferramenta de auxílio ao gestor.",
-        attention: "Cuidado para não confundir 'saldo elevado' com desabastecimento na Q1d. Na Q4, conclua o plano prático em tópicos estruturados sem esquemas incompletos.",
-        recommendation: "Estruturar planos de ação no formato 5W2H simples (O quê, Por quê, Como) para facilitar a leitura das soluções propostas."
+        strengths: "Excelente domínio de conferência financeira em Q2, cubagem em Q3 e brilhante resposta discursiva no diagnóstico de sistemas em Q5.",
+        attention: "Reavaliar a interpretação do conceito de saldo elevado de estoque em Q4 (risco de capital parado e custo de oportunidade) e detalhar o plano de ação prática.",
+        recommendation: "Aprofundar-se nos conceitos de Estoque Mínimo, Ponto de Pedido e filosofia Just-in-Time para balanceamento ideal de armazenagem."
       },
       {
-        id: "10",
+        id: "laurisosorio",
         name: "Lauris Osorio H.",
+        initials: "LO",
         q1: 1.8,
         q2: 2.0,
         q3: 1.9,
         q4: 2.0,
         q5: 0.8,
         total: 8.5,
-        strengths: "Excelente domínio da precificação financeira de estoque (Q2) e identificação precisa do gargalo na etapa de expedição no cálculo do Lead Time (Q3).",
-        attention: "Aprofundar a fundamentação na Q5 sobre como o discernimento e a análise crítica humana complementam os cálculos automatizados do sistema.",
-        recommendation: "Dedicar maior tempo no desenvolvimento dos argumentos reflexivos, contextualizando com problemas práticos da logística."
+        strengths: "Performance excepcional em todas as tabelas práticas e cálculos de recebimento, movimentação e insumos (Q1 a Q4).",
+        attention: "Aprofundamento discursivo na Q5: Explicar detalhadamente por que a inteligência crítica humana do profissional de logística não pode ser substituída pelo software.",
+        recommendation: "Exercitar a elaboração de pareceres gerenciais, unindo relatórios de planilhas com justificativas teóricas e estratégicas de negócios."
       },
       {
-        id: "11",
+        id: "lucashenrique",
         name: "Lucas Henrique Garcia",
+        initials: "LG",
         q1: 2.0,
         q2: 2.0,
         q3: 1.8,
         q4: 2.0,
         q5: 2.0,
         total: 9.8,
-        strengths: "Tabelas com exatidão perfeita e excelente articulação sobre acuracidade de estoque, segurança da informação e prevenção de prejuízos operacionais.",
-        attention: "Detalhar com maior profundidade o impacto do tempo ocioso nos custos fixos e na capacidade operacional geral na Q3.",
-        recommendation: "Incorporar conceitos de custo de oportunidade e eficiência global ao analisar tempos mortos em processos logísticos."
+        strengths: "Desempenho fantástico com nota máxima em 4 das 5 questões da avaliação prática, revelando alto rigor técnico.",
+        attention: "Apenas um pequeno detalhe na justificativa da ociosidade (Q3): Detalhar com maior clareza o impacto no tempo de entrega ao cliente final (SLA).",
+        recommendation: "Estudar métricas avançadas de nível de serviço logístico como OTIF (On-Time In-Full) e Lead Time de pedido."
       },
       {
-        id: "12",
+        id: "rebecaanibeletto",
         name: "Rebeca M. Anibeletto",
+        initials: "RA",
         q1: 2.0,
         q2: 2.0,
         q3: 2.0,
         q4: 2.0,
         q5: 2.0,
         total: 10.0,
-        strengths: "Avaliação exemplar (Nota 10,0)! Raciocínio irretocável, respostas completas com vocabulário técnico apurado e perfeito domínio dos conceitos.",
-        attention: "Nenhuma incorreção identificada nesta avaliação.",
-        recommendation: "Manter a busca por aperfeiçoamento contínuo e aplicar o aprendizado em projetos avançados de automação de dashboards."
+        strengths: "Prova EXEMPLAR e perfeita! Todas as planilhas preenchidas corretamente, cálculos exatos e justificativas discursivas de altíssimo nível.",
+        attention: "Excelência máxima demonstrada ao longo de toda a resolução da prova.",
+        recommendation: "Aplicar suas habilidades em projetos reais de modelagem de malha logística e simulação de capacidade de centro de distribuição."
       }
     ];
 
-    const QUESTION_LABELS = {
-      q1: "Q1. Gestão de Estoque e Movimentação Física",
-      q2: "Q2. Quantidade e Valor Financeiro de Estoque",
-      q3: "Q3. Mapeamento de Processo e Lead Time",
-      q4: "Q4. Resolução de Problemas na Expedição",
-      q5: "Q5. Análise Crítica: Software vs. Inteligência Humana"
-    };
+    let currentStudentIndex = 0;
+    let currentActiveTab = 'individual'; // 'individual' or 'general'
+    let currentTableFilter = 'all';
+    let currentDeviceMode = 'auto';
 
-    let currentStudentId = "8"; // Default to Jennifer (Nota 10)
+    function setDeviceMode(mode) {
+      currentDeviceMode = mode;
+      const appWrapper = document.getElementById('app-wrapper');
+      
+      const btnAuto = document.getElementById('btn-mode-auto');
+      const btnMobile = document.getElementById('btn-mode-mobile');
+      const btnDesktop = document.getElementById('btn-mode-desktop');
 
-    window.addEventListener('DOMContentLoaded', () => {
-      populateStudentDropdown();
-      renderCurrentStudentCard();
-      renderClassTable();
-    });
-
-    function populateStudentDropdown() {
-      const select = document.getElementById('studentSelect');
-      select.innerHTML = '';
-      STUDENTS.forEach(student => {
-        const option = document.createElement('option');
-        option.value = student.id;
-        option.textContent = `${student.name} — Nota Final: ${student.total.toFixed(1).replace('.', ',')} / 10,0`;
-        select.appendChild(option);
+      // Reset button styles
+      [btnAuto, btnMobile, btnDesktop].forEach(btn => {
+        btn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-700";
       });
-      select.value = currentStudentId;
-    }
 
-    function switchView(viewName) {
-      const btnInd = document.getElementById('tabIndividual');
-      const btnTur = document.getElementById('tabTurma');
-      const viewInd = document.getElementById('viewIndividual');
-      const viewTur = document.getElementById('viewTurma');
+      // Reset wrapper classes
+      appWrapper.classList.remove('mobile-simulator', 'desktop-simulator');
 
-      if (viewName === 'individual') {
-        viewInd.classList.remove('hidden');
-        viewTur.classList.add('hidden');
-        btnInd.className = "flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 bg-white text-slate-900 shadow-sm";
-        btnTur.className = "flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 text-slate-600 hover:text-slate-900";
+      if (mode === 'mobile') {
+        appWrapper.classList.add('mobile-simulator');
+        btnMobile.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all bg-sky-600 text-white font-semibold shadow-sm";
+      } else if (mode === 'desktop') {
+        appWrapper.classList.add('desktop-simulator');
+        btnDesktop.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all bg-sky-600 text-white font-semibold shadow-sm";
       } else {
-        viewInd.classList.add('hidden');
-        viewTur.classList.remove('hidden');
-        btnTur.className = "flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 bg-white text-slate-900 shadow-sm";
-        btnInd.className = "flex-1 sm:flex-none flex items-center justify-center space-x-2 px-4 py-2.5 rounded-md font-semibold text-sm transition-all duration-200 text-slate-600 hover:text-slate-900";
+        btnAuto.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all bg-sky-600 text-white font-semibold shadow-sm";
       }
     }
 
-    function onStudentSelect(id) {
-      currentStudentId = id;
-      renderCurrentStudentCard();
+    function populateStudentSelect() {
+      const select = document.getElementById('student-select');
+      select.innerHTML = '';
+
+      studentsData.forEach((student, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${index + 1}. ${student.name} — Nota: ${student.total.toFixed(1).replace('.', ',')}`;
+        select.appendChild(option);
+      });
+    }
+
+    function onStudentSelectChange(index) {
+      currentStudentIndex = parseInt(index, 10);
+      renderStudentCard();
+    }
+
+    function navigateStudent(direction) {
+      currentStudentIndex += direction;
+      if (currentStudentIndex < 0) currentStudentIndex = studentsData.length - 1;
+      if (currentStudentIndex >= studentsData.length) currentStudentIndex = 0;
+      
+      document.getElementById('student-select').value = currentStudentIndex;
+      renderStudentCard();
     }
 
     function selectStudentById(id) {
-      currentStudentId = id;
-      document.getElementById('studentSelect').value = id;
-      switchView('individual');
-      renderCurrentStudentCard();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function filterStudentDropdown(term) {
-      const select = document.getElementById('studentSelect');
-      const lower = term.toLowerCase().trim();
-      const filtered = STUDENTS.filter(s => s.name.toLowerCase().includes(lower));
-      
-      select.innerHTML = '';
-      if (filtered.length === 0) {
-        const option = document.createElement('option');
-        option.textContent = 'Nenhum aluno encontrado';
-        select.appendChild(option);
-        return;
-      }
-      
-      filtered.forEach(student => {
-        const option = document.createElement('option');
-        option.value = student.id;
-        option.textContent = `${student.name} — Nota Final: ${student.total.toFixed(1).replace('.', ',')} / 10,0`;
-        select.appendChild(option);
-      });
-
-      if (filtered.length > 0) {
-        select.value = filtered[0].id;
-        currentStudentId = filtered[0].id;
-        renderCurrentStudentCard();
+      const index = studentsData.findIndex(s => s.id === id);
+      if (index !== -1) {
+        currentStudentIndex = index;
+        document.getElementById('student-select').value = index;
+        switchMainTab('individual');
+        renderStudentCard();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
 
-    function renderCurrentStudentCard() {
-      const student = STUDENTS.find(s => s.id === currentStudentId);
-      if (!student) return;
+    function renderStudentCard() {
+      const student = studentsData[currentStudentIndex];
+      const container = document.getElementById('student-card-container');
 
-      const container = document.getElementById('studentCardContainer');
-      const formattedTotal = student.total.toFixed(1).replace('.', ',');
-      const pct = (student.total / 10) * 100;
+      // Calculate progress percentage
+      const totalPercentage = (student.total / 10.0) * 100;
       
-      // Determine badge colors based on performance
-      let scoreBadgeBg = "bg-sky-50 text-sky-700 border-sky-200";
-      let starBadge = "";
-      if (student.total === 10.0) {
-        scoreBadgeBg = "bg-emerald-50 text-emerald-800 border-emerald-300";
-        starBadge = "⭐ Nota Máxima";
-      } else if (student.total >= 9.5) {
-        scoreBadgeBg = "bg-sky-50 text-sky-800 border-sky-300";
-        starBadge = "🏆 Excelência";
+      // Avatar color palette based on grade
+      let avatarBg = "bg-blue-600";
+      let badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+      if (student.total >= 9.5) {
+        avatarBg = "bg-amber-500";
+        badgeClass = "bg-amber-100 text-amber-900 border-amber-300";
+      } else if (student.total >= 9.0) {
+        avatarBg = "bg-blue-600";
       }
+
+      // Format question score
+      const formatScore = (score) => score.toFixed(1).replace('.', ',');
+      const scoreWidth = (score) => (score / 2.0) * 100;
 
       container.innerHTML = `
-        <!-- Main Student Header Banner -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6 print-shadow-none">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-6">
-            <div class="flex items-center space-x-4">
-              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-slate-900 to-brand-900 text-white flex items-center justify-center text-xl sm:text-2xl font-black shadow-md border border-brand-500/30">
-                ${student.name.split(' ').map(n => n[0]).slice(0,2).join('')}
-              </div>
-              <div>
-                <div class="flex items-center space-x-2">
-                  <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Aluno(a) Avaliado(a)</span>
-                  ${starBadge ? `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${scoreBadgeBg}">${starBadge}</span>` : ''}
-                </div>
-                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mt-1">${student.name}</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Módulo: Excel Aplicado à Logística • Avaliação Individual</p>
-              </div>
-            </div>
-
-            <div class="flex flex-row md:flex-col items-center md:items-end justify-between bg-slate-50 p-4 rounded-xl border border-slate-200 min-w-[200px]">
-              <span class="text-xs font-semibold text-slate-500">Nota Final na Prova</span>
-              <div class="text-3xl sm:text-4xl font-extrabold text-brand-600 tracking-tight">
-                ${formattedTotal} <span class="text-base font-normal text-slate-400">/ 10,0</span>
-              </div>
-              <span class="inline-flex items-center space-x-1 text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 mt-1">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Aprovado(a) (Média ≥ 6,0)</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Grade Bar Comparison -->
-          <div class="space-y-2">
-            <div class="flex justify-between text-xs font-semibold text-slate-600">
-              <span>Desempenho Geral: ${pct.toFixed(0)}% de aproveitamento</span>
-              <span>Corte de Aprovação Módulo: 6,0 (60%)</span>
-            </div>
-            <div class="relative w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-              <!-- Passing mark line -->
-              <div class="absolute top-0 bottom-0 left-[60%] w-0.5 bg-slate-400 z-10" title="Média Mínima 6,0"></div>
-              <!-- Student score bar -->
-              <div class="h-full bg-gradient-to-r from-brand-500 to-emerald-500 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-            </div>
-            <div class="flex justify-between text-[11px] text-slate-400 font-medium">
-              <span>0,0</span>
-              <span>6,0 (Nota Mínima)</span>
-              <span>10,0 (Máxima)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Question breakdown grid -->
-        <div class="space-y-3">
-          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-2">
-            <svg class="w-4 h-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-            <span>Detalhamento da Pontuação Questão por Questão</span>
-          </h3>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            ${renderQuestionCard('Q1', student.q1, QUESTION_LABELS.q1)}
-            ${renderQuestionCard('Q2', student.q2, QUESTION_LABELS.q2)}
-            ${renderQuestionCard('Q3', student.q3, QUESTION_LABELS.q3)}
-            ${renderQuestionCard('Q4', student.q4, QUESTION_LABELS.q4)}
-            ${renderQuestionCard('Q5', student.q5, QUESTION_LABELS.q5)}
-          </div>
-        </div>
-
-        <!-- Teacher Feedback 3-Block Section -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6 print-shadow-none">
-          <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="p-2 bg-brand-50 text-brand-600 rounded-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-              </div>
-              <div>
-                <h3 class="text-base font-bold text-slate-900">Parecer Pedagógico do Professor</h3>
-                <p class="text-xs text-slate-500">Orientações e recomendações específicas para o progresso continuado no curso</p>
-              </div>
-            </div>
-            <span class="text-xs text-slate-400 font-medium hidden sm:inline">Avaliador: Docente Responsável</span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all">
+          
+          <!-- Student Header Banner -->
+          <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
             
-            <!-- Block A: Pontos Fortes -->
-            <div class="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-4 space-y-2">
-              <div class="flex items-center space-x-2 text-emerald-800 font-bold text-xs uppercase tracking-wider">
-                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>a) Pontos Fortes e Destaques</span>
+            <div class="flex items-center space-x-4">
+              <!-- Avatar -->
+              <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${avatarBg} flex items-center justify-center text-white text-xl sm:text-2xl font-extrabold shadow-md border-2 border-white/20 shrink-0">
+                ${student.initials}
               </div>
-              <p class="text-sm text-emerald-950 leading-relaxed font-normal">
-                ${student.strengths}
-              </p>
+              
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded bg-white/10 text-sky-300">Aluno #${currentStudentIndex + 1}</span>
+                  <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border ${badgeClass}">
+                    <i class="fa-solid fa-circle-check mr-1"></i> APROVADO(A)
+                  </span>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1 leading-tight">${student.name}</h3>
+                <p class="text-xs text-slate-300 mt-0.5"><i class="fa-solid fa-layer-group text-sky-400 mr-1"></i> Módulo: Excel Aplicado à Logística</p>
+              </div>
             </div>
 
-            <!-- Block B: Onde Prestar Atenção -->
-            <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-4 space-y-2">
-              <div class="flex items-center space-x-2 text-amber-800 font-bold text-xs uppercase tracking-wider">
-                <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                <span>b) Onde Prestar Mais Atenção</span>
+            <!-- Grade Callout Box -->
+            <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/15 flex items-center justify-between md:justify-end gap-4 shrink-0">
+              <div class="text-left md:text-right">
+                <p class="text-xs text-sky-200 font-medium">Nota Final Obtida</p>
+                <p class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">${student.total.toFixed(1).replace('.', ',')} <span class="text-xs text-sky-300 font-normal">/ 10,0</span></p>
               </div>
-              <p class="text-sm text-amber-950 leading-relaxed font-normal">
-                ${student.attention}
-              </p>
-            </div>
-
-            <!-- Block C: Recomendação Prática -->
-            <div class="bg-sky-50/60 border border-sky-200/80 rounded-xl p-4 space-y-2">
-              <div class="flex items-center space-x-2 text-sky-800 font-bold text-xs uppercase tracking-wider">
-                <svg class="w-4 h-4 text-sky-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
-                <span>c) Recomendação do Professor</span>
+              <div class="w-12 h-12 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-amber-300 text-xl font-bold">
+                ${student.total >= 9.5 ? '<i class="fa-solid fa-trophy text-2xl"></i>' : '<i class="fa-solid fa-star text-2xl"></i>'}
               </div>
-              <p class="text-sm text-sky-950 leading-relaxed font-normal">
-                ${student.recommendation}
-              </p>
             </div>
 
           </div>
-        </div>
-      `;
-    }
 
-    function renderQuestionCard(code, score, label) {
-      const formatted = score.toFixed(1).replace('.', ',');
-      const pct = (score / 2.0) * 100;
-      let barColor = "bg-brand-500";
-      if (score === 2.0) barColor = "bg-emerald-500";
-      else if (score < 1.5) barColor = "bg-amber-500";
-
-      return `
-        <div class="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2 shadow-xs">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-xs text-slate-800">${code}</span>
-            <span class="font-black text-sm text-slate-900">${formatted} <span class="text-xs font-normal text-slate-400">/ 2,0</span></span>
-          </div>
-          <p class="text-[11px] text-slate-500 leading-tight font-medium h-8 line-clamp-2">${label.split('. ')[1]}</p>
-          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-            <div class="${barColor} h-full rounded-full" style="width: ${pct}%"></div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderClassTable() {
-      const tbody = document.getElementById('classTableBody');
-      tbody.innerHTML = '';
-
-      STUDENTS.forEach((student, index) => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition-colors cursor-pointer group";
-        tr.onclick = () => selectStudentById(student.id);
-
-        const totalFormatted = student.total.toFixed(1).replace('.', ',');
-        
-        tr.innerHTML = `
-          <td class="py-3 px-4 text-center text-xs font-semibold text-slate-400">${index + 1}</td>
-          <td class="py-3 px-4 font-bold text-slate-900 group-hover:text-brand-600 transition-colors">
-            ${student.name}
-          </td>
-          <td class="py-3 px-3 text-center font-medium text-slate-700">${student.q1.toFixed(1).replace('.', ',')}</td>
-          <td class="py-3 px-3 text-center font-medium text-slate-700">${student.q2.toFixed(1).replace('.', ',')}</td>
-          <td class="py-3 px-3 text-center font-medium text-slate-700">${student.q3.toFixed(1).replace('.', ',')}</td>
-          <td class="py-3 px-3 text-center font-medium text-slate-700">${student.q4.toFixed(1).replace('.', ',')}</td>
-          <td class="py-3 px-3 text-center font-medium text-slate-700">${student.q5.toFixed(1).replace('.', ',')}</td>
-          <td class="py-3 px-4 text-center font-extrabold text-brand-600 text-base bg-slate-50">
-            ${totalFormatted}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Aprovado(a)
+          <!-- Overall Progress Bar -->
+          <div class="bg-slate-100 px-6 py-3 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+            <span class="font-bold text-slate-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-bar text-blue-600"></i> Percentual de Aproveitamento Geral:
             </span>
-          </td>
-          <td class="py-3 px-3 text-center no-print">
-            <button onclick="event.stopPropagation(); selectStudentById('${student.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-brand-50 hover:text-brand-600 text-slate-600 text-xs font-semibold rounded border border-slate-200 transition-colors">
-              Ver Parecer
-            </button>
-          </td>
-        `;
+            <div class="w-full sm:w-2/3 flex items-center space-x-3">
+              <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden shadow-inner">
+                <div class="bg-gradient-to-r from-blue-500 to-emerald-500 h-3 rounded-full transition-all duration-500" style="width: ${totalPercentage}%"></div>
+              </div>
+              <span class="font-extrabold text-slate-700 min-w-[45px] text-right">${totalPercentage.toFixed(0)}%</span>
+            </div>
+          </div>
 
-        tbody.appendChild(tr);
-      });
+          <!-- Body Content -->
+          <div class="p-5 sm:p-6 space-y-6">
+            
+            <!-- DETALHAMENTO DAS 5 QUESTÕES -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+                <i class="fa-solid fa-list-check text-blue-600"></i> Desempenho Detalhado por Questão (Max: 2,0 pts cada)
+              </h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                
+                <!-- Q1 -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-700">Q1: Operações de Estoque</span>
+                    <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${formatScore(student.q1)} / 2,0</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${scoreWidth(student.q1)}%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-tight">Recebimento, expedientes e saldo de estoque.</p>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-700">Q2: Conferência de Totais</span>
+                    <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${formatScore(student.q2)} / 2,0</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${scoreWidth(student.q2)}%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-tight">Somas acumuladas e totais financeiros.</p>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-700">Q3: Cubagem & Ociosidade</span>
+                    <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${formatScore(student.q3)} / 2,0</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${scoreWidth(student.q3)}%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-tight">Métricas volumétricas e ociosidade.</p>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-700">Q4: Gestão de Insumos</span>
+                    <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${formatScore(student.q4)} / 2,0</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${scoreWidth(student.q4)}%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-tight">Filme Stretch, fita e plano de ação.</p>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-xs font-bold text-slate-700">Q5: Diagnóstico Crítico</span>
+                    <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">${formatScore(student.q5)} / 2,0</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5 overflow-hidden">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: ${scoreWidth(student.q5)}%"></div>
+                  </div>
+                  <p class="text-[11px] text-slate-500 leading-tight">Análise gerencial e decisão prática.</p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 3 FEEDBACK CARDS (PONTOS FORTES, ATENÇÃO, RECOMENDAÇÃO) -->
+            <div class="space-y-4 pt-2">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fa-solid fa-comment-dots text-blue-600"></i> Parecer Pedagógico e Orientações Individuais
+              </h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- CARD 1: PONTOS FORTES -->
+                <div class="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2 text-emerald-800 mb-2 font-bold text-sm">
+                      <div class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                      </div>
+                      <h5>Pontos Fortes e Conquistas</h5>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                      ${student.strengths}
+                    </p>
+                  </div>
+                  <div class="mt-3 pt-2 border-t border-emerald-200/60 text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                    <i class="fa-solid fa-thumbs-up"></i> Aspecto positivo em destaque
+                  </div>
+                </div>
+
+                <!-- CARD 2: ONDE PRESTAR ATENÇÃO -->
+                <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2 text-amber-900 mb-2 font-bold text-sm">
+                      <div class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                      </div>
+                      <h5>Onde Prestar Mais Atenção</h5>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                      ${student.attention}
+                    </p>
+                  </div>
+                  <div class="mt-3 pt-2 border-t border-amber-200/60 text-[11px] font-semibold text-amber-800 flex items-center gap-1">
+                    <i class="fa-solid fa-eye"></i> Ponto de atenção pedagógica
+                  </div>
+                </div>
+
+                <!-- CARD 3: RECOMENDAÇÃO PRÓXIMO MÓDULO -->
+                <div class="bg-sky-50/60 border border-sky-200 rounded-2xl p-4 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2 text-sky-900 mb-2 font-bold text-sm">
+                      <div class="w-7 h-7 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-compass text-sm"></i>
+                      </div>
+                      <h5>Recomendação para o Próximo Módulo</h5>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                      ${student.recommendation}
+                    </p>
+                  </div>
+                  <div class="mt-3 pt-2 border-t border-sky-200/60 text-[11px] font-semibold text-sky-800 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> Próximos passos de desenvolvimento
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      `;
     }
 
-    function filterClassTable(term) {
-      const lower = term.toLowerCase().trim();
-      const rows = document.querySelectorAll('#classTableBody tr');
+    function switchMainTab(tab) {
+      currentActiveTab = tab;
+      const secInd = document.getElementById('section-individual');
+      const secGen = document.getElementById('section-general');
+      const btnInd = document.getElementById('tab-btn-individual');
+      const btnGen = document.getElementById('tab-btn-general');
+
+      if (tab === 'individual') {
+        secInd.classList.remove('hidden');
+        secGen.classList.add('hidden');
+        
+        btnInd.className = "px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-blue-600 text-white shadow-sm";
+        btnGen.className = "px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200";
+      } else {
+        secInd.classList.add('hidden');
+        secGen.classList.remove('hidden');
+
+        btnGen.className = "px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-blue-600 text-white shadow-sm";
+        btnInd.className = "px-4 py-2 rounded-lg text-sm font-bold flex items-center space-x-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200";
+
+        renderGeneralTable();
+      }
+    }
+
+    function setTableFilter(filter) {
+      currentTableFilter = filter;
       
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        if (text.includes(lower)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
+      const btnAll = document.getElementById('filter-btn-all');
+      const btnTop = document.getElementById('filter-btn-top');
+      const btn9 = document.getElementById('filter-btn-above9');
+      const btn8 = document.getElementById('filter-btn-above8');
+
+      [btnAll, btnTop, btn9, btn8].forEach(btn => {
+        btn.className = "px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200";
       });
+
+      if (filter === 'top') btnTop.className = "px-3 py-1.5 rounded-lg font-semibold bg-blue-600 text-white shadow-sm";
+      else if (filter === 'above9') btn9.className = "px-3 py-1.5 rounded-lg font-semibold bg-blue-600 text-white shadow-sm";
+      else if (filter === 'above8') btn8.className = "px-3 py-1.5 rounded-lg font-semibold bg-blue-600 text-white shadow-sm";
+      else btnAll.className = "px-3 py-1.5 rounded-lg font-semibold bg-blue-600 text-white shadow-sm";
+
+      renderGeneralTable();
     }
+
+    function renderGeneralTable() {
+      const tbody = document.getElementById('general-table-body');
+      const searchVal = document.getElementById('table-search').value.toLowerCase().trim();
+
+      let filtered = studentsData.filter(student => {
+        // Search text matching
+        const matchesSearch = student.name.toLowerCase().includes(searchVal);
+
+        // Grade filter matching
+        let matchesGrade = true;
+        if (currentTableFilter === 'top') matchesGrade = student.total === 10.0;
+        else if (currentTableFilter === 'above9') matchesGrade = student.total >= 9.0;
+        else if (currentTableFilter === 'above8') matchesGrade = student.total >= 8.0;
+
+        return matchesSearch && matchesGrade;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-8 text-center text-slate-500 font-medium">
+              <i class="fa-solid fa-circle-question text-2xl text-slate-400 mb-2 block"></i>
+              Nenhum aluno encontrado para os critérios de busca selecionados.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((student, idx) => {
+        const formatScore = (s) => s.toFixed(1).replace('.', ',');
+        const originalIndex = studentsData.findIndex(s => s.id === student.id) + 1;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3 px-4 font-extrabold text-slate-400 text-center">${originalIndex}</td>
+            <td class="py-3 px-4 font-bold text-slate-800">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-8 h-8 rounded-lg bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  ${student.initials}
+                </div>
+                <div>
+                  <p class="leading-tight">${student.name}</p>
+                  <p class="text-[10px] text-slate-400 font-normal">Excel Aplicado à Logística</p>
+                </div>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium">${formatScore(student.q1)}</td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium">${formatScore(student.q2)}</td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium">${formatScore(student.q3)}</td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium">${formatScore(student.q4)}</td>
+            <td class="py-3 px-3 text-center text-slate-600 font-medium">${formatScore(student.q5)}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-block px-2.5 py-1 rounded-lg font-black ${student.total >= 9.5 ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-blue-100 text-blue-900'}">
+                ${student.total.toFixed(1).replace('.', ',')}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                <i class="fa-solid fa-circle-check text-[10px]"></i> Aprovado
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center no-print">
+              <button onclick="selectStudentById('${student.id}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition-all flex items-center space-x-1 mx-auto border border-blue-200">
+                <i class="fa-solid fa-eye"></i>
+                <span>Detalhes</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.onload = function() {
+      populateStudentSelect();
+      renderStudentCard();
+      
+      // Default auto mode
+      setDeviceMode('auto');
+    };
   </script>
 </body>
 </html>
